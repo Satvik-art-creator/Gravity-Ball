@@ -16,6 +16,8 @@ var particle, base;
 
 var gameState = "play";
 
+localStorage["HighestScore"] = 0;
+
 function setup() {
   createCanvas(800, 800);
 
@@ -53,10 +55,22 @@ function draw() {
 
   Engine.update(engine);
 
+  fill("white");
   textSize(20);
-  text("Score: " + score, 20, 30);
-  text("You have only 5 turns", 300, 30);
+  text("Score: " + score, 195, 30);
   text("Your Turn: " + turn, 600, 30);
+
+  if(gameState === "play"){
+    text("You have only 5 turns", 330, 30);
+  } else{
+    text("Tap anywhere to Retry", 342, 30);
+  }
+  
+  if (localStorage["HighestScore"] < score) {
+    localStorage["HighestScore"] = score;
+  }
+
+  text("High Score: " + localStorage["HighestScore"], 20, 30);
 
   textSize(30);
   text(500, 18, 540);
@@ -190,17 +204,25 @@ function draw() {
     }
   }
 
-  if (gameState === "end" && turn >= 5) {
-    textSize(50);
-    text("Game Over", 270, 227);
+  if (turn >= 5) {
+    gameState = "end";
   }
 
-  // console.log(mouseX);
+  if (gameState === "end" && turn >= 5) {
+    textSize(50);
+    text("Game Over", 270, 238);
+  }
+
+  // console.log(mouseY);
 }
 
 function mousePressed() {
-  if (gameState != "end" && mouseX > 55 && mouseX < 720) {
+  if (gameState != "end" && mouseX > 55 && mouseX < 720 && mouseY <= 60) {
     turn += 1;
     particle = new Particle(mouseX, 10, 10);
+  } else{
+    gameState = "play";
+    turn = 0;
+    score = 0;
   }
 }
